@@ -210,7 +210,7 @@ VirtioGPU.prototype._is_supported_format = function(format)
 
 /**
  * Read a logical byte range from concatenated backing entries.
- * @param {object} resource
+ * @param {!Object} resource
  * @param {number} logical_offset
  * @param {number} length
  * @returns {Uint8Array|null}
@@ -777,7 +777,7 @@ VirtioGPU.prototype.cmd_get_edid = function(queue_id, bufchain, view)
 /**
  * Send a simple response with only a control header.
  * @param {number} queue_id
- * @param {VirtQueueBufferChain} bufchain
+ * @param {*} bufchain
  * @param {number} resp_type
  */
 VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
@@ -794,7 +794,7 @@ VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
 /**
  * Send a response with additional data after the header.
  * @param {number} queue_id
- * @param {VirtQueueBufferChain} bufchain
+ * @param {*} bufchain
  * @param {Uint8Array} data
  */
 VirtioGPU.prototype.send_response_data = function(queue_id, bufchain, data)
