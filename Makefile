@@ -81,12 +81,12 @@ CARGO_FLAGS=$(CARGO_FLAGS_SAFE) -C target-feature=+bulk-memory -C target-feature
 CORE_FILES=cjs.js const.js io.js main.js lib.js buffer.js ide.js pci.js floppy.js \
 	   dma.js pit.js vga.js ps2.js rtc.js uart.js \
 	   acpi.js iso9660.js \
-	   state.js ne2k.js sb16.js virtio.js virtio_console.js virtio_net.js virtio_balloon.js \
+	   state.js ne2k.js sb16.js virtio.js virtio_console.js virtio_net.js virtio_balloon.js virtio_gpu.js \
 	   bus.js log.js cpu.js \
 	   elf.js kernel.js
 LIB_FILES=9p.js filesystem.js marshall.js
 BROWSER_FILES=screen.js keyboard.js mouse.js speaker.js serial.js \
-	      network.js starter.js worker_bus.js dummy_screen.js \
+	      network.js starter.js worker_bus.js dummy_screen.js webgl_screen.js \
 	      inbrowser_network.js fake_network.js wisp_network.js fetch_network.js \
           print_stats.js filestorage.js
 

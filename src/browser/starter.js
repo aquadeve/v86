@@ -15,6 +15,7 @@ import { KeyboardAdapter } from "./keyboard.js";
 import { MouseAdapter } from "./mouse.js";
 import { ScreenAdapter } from "./screen.js";
 import { DummyScreenAdapter } from "./dummy_screen.js";
+import { WebGLScreenAdapter } from "./webgl_screen.js";
 import { SerialAdapter, VirtioConsoleAdapter, SerialAdapterXtermJS, VirtioConsoleAdapterXtermJS } from "./serial.js";
 import { InBrowserNetworkAdapter } from "./inbrowser_network.js";
 
@@ -320,6 +321,17 @@ V86.prototype.continue_init = async function(emulator, options)
     if(!options.disable_speaker)
     {
         this.speaker_adapter = new SpeakerAdapter(this.bus);
+    }
+
+    if(options.virtio_gpu)
+    {
+        const gpu_container = (options.virtio_gpu && typeof options.virtio_gpu === "object" && options.virtio_gpu.container) ||
+            screen_options.container;
+        if(gpu_container)
+        {
+            this.webgl_screen_adapter = new WebGLScreenAdapter({ container: gpu_container }, this.bus);
+        }
+        settings.virtio_gpu = true;
     }
 
     // ugly, but required for closure compiler compilation
@@ -789,6 +801,7 @@ V86.prototype.destroy = async function()
     this.serial_adapter && this.serial_adapter.destroy();
     this.speaker_adapter && this.speaker_adapter.destroy();
     this.virtio_console_adapter && this.virtio_console_adapter.destroy();
+    this.webgl_screen_adapter && this.webgl_screen_adapter.destroy();
 };
 
 /**

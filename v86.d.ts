@@ -325,6 +325,14 @@ export interface V86Options {
     virtio_balloon?: boolean;
 
     /**
+     * Enable virtio-gpu device for WebGL-accelerated graphics.
+     * Set to true to use the main screen_container, or provide an
+     * object with a custom container element.
+     * @default false
+     */
+    virtio_gpu?: boolean | { container: HTMLElement };
+
+    /**
      * override the maximum supported cpuid level
      * used for some versions of Windows, see docs/windows-nt.md
      */
