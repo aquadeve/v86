@@ -1,0 +1,75 @@
+<!doctype html>
+<title>WebGL virtio-gpu Example</title>
+
+<style>
+body { background: #1a1a1a; color: #eee; font-family: sans-serif; margin: 0; padding: 16px; }
+h1 { font-size: 1.2em; margin: 0 0 8px; }
+p  { font-size: 0.85em; margin: 0 0 12px; color: #aaa; }
+#webgl_container canvas { display: block; border: 1px solid #444; }
+#status { margin-top: 8px; font-size: 0.8em; color: #888; }
+</style>
+
+<h1>v86 &mdash; WebGL virtio-gpu acceleration example</h1>
+<p>
+    The emulator uses the <strong>virtio-gpu</strong> virtual device and renders the
+    guest framebuffer onto a WebGL canvas for hardware-accelerated display.
+    A Canvas&nbsp;2D fallback is used automatically when WebGL is unavailable.
+</p>
+
+<!--
+    Container for the WebGL screen adapter.
+    Unlike the standard VGA ScreenAdapter, WebGLScreenAdapter only needs a
+    <canvas> element (the text-mode <div> is not used here).
+-->
+<div id="webgl_container">
+    <canvas></canvas>
+</div>
+<div id="status">Starting&hellip;</div>
+
+<script src="../build/libv86.js"></script>
+<script>
+"use strict";
+
+window.onload = function()
+{
+    var status_el = document.getElementById("status");
+
+    var emulator = window.emulator = new V86({
+        wasm_path: "../build/v86.wasm",
+
+        // Give the guest enough RAM for a graphical desktop.
+        memory_size: 256 * 1024 * 1024,
+
+        // VGA memory is still required for the SeaBIOS/VGABIOS init phase
+        // even though virtio-gpu takes over display output at runtime.
+        vga_memory_size: 8 * 1024 * 1024,
+
+        bios: { url: "../bios/seabios.bin" },
+        vga_bios: { url: "../bios/vgabios.bin" },
+
+        // Boot a Linux image that has the virtio-gpu driver available.
+        cdrom: { url: "../images/linux.iso" },
+
+        // Enable the virtio-gpu device.  Pass the container element so that
+        // WebGLScreenAdapter can attach its canvas to it.  When set to
+        // `true` (without a container), the same element as screen_container
+        // is used, but providing it explicitly keeps the two display paths
+        // independent.
+        virtio_gpu: {
+            container: document.getElementById("webgl_container"),
+        },
+
+        autostart: true,
+    });
+
+    emulator.add_listener("emulator-ready", function()
+    {
+        status_el.textContent = "Emulator ready — booting guest…";
+    });
+
+    emulator.add_listener("emulator-started", function()
+    {
+        status_el.textContent = "Guest running (virtio-gpu / WebGL)";
+    });
+};
+</script>
