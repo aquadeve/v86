@@ -635,7 +635,7 @@ VirtioGPU.prototype.cmd_get_capset = function(queue_id, bufchain, view)
 /**
  * Send a simple response with only a control header.
  * @param {number} queue_id
- * @param {Object} bufchain
+ * @param {VirtQueueBufferChain} bufchain
  * @param {number} resp_type
  */
 VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
@@ -652,7 +652,7 @@ VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
 /**
  * Send a response with additional data after the header.
  * @param {number} queue_id
- * @param {Object} bufchain
+ * @param {VirtQueueBufferChain} bufchain
  * @param {Uint8Array} data  Full response buffer (header + payload)
  */
 VirtioGPU.prototype.send_response_data = function(queue_id, bufchain, data)
@@ -709,3 +709,5 @@ VirtioGPU.prototype.reset = function()
         scanout.height = DEFAULT_HEIGHT;
     }
 };
+
+
