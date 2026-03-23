@@ -31,6 +31,7 @@ import { IDEController } from "./ide.js";
 import { VirtioNet } from "./virtio_net.js";
 import { VGAScreen } from "./vga.js";
 import { VirtioBalloon } from "./virtio_balloon.js";
+import { VirtioGPU } from "./virtio_gpu.js";
 import { Virtio9p, Virtio9pHandler, Virtio9pProxy } from "../lib/9p.js";
 
 import { load_kernel } from "./kernel.js";
@@ -564,6 +565,7 @@ CPU.prototype.get_state = function()
     state[82] = this.devices.virtio_console;
     state[83] = this.devices.virtio_net;
     state[84] = this.devices.virtio_balloon;
+    state[90] = this.devices.virtio_gpu;
 
     // state[85] new ide set above
 
@@ -738,6 +740,7 @@ CPU.prototype.set_state = function(state)
     this.devices.virtio_console && this.devices.virtio_console.set_state(state[82]);
     this.devices.virtio_net && this.devices.virtio_net.set_state(state[83]);
     this.devices.virtio_balloon && this.devices.virtio_balloon.set_state(state[84]);
+    this.devices.virtio_gpu && this.devices.virtio_gpu.set_state(state[90]);
 
     this.fw_value = state[62];
 
@@ -944,6 +947,10 @@ CPU.prototype.reboot_internal = function()
     if(this.devices.virtio_net)
     {
         this.devices.virtio_net.reset();
+    }
+    if(this.devices.virtio_gpu)
+    {
+        this.devices.virtio_gpu.reset();
     }
     if(this.devices.ps2)
     {
@@ -1234,6 +1241,10 @@ CPU.prototype.init = function(settings, device_bus)
         if(settings.virtio_balloon)
         {
             this.devices.virtio_balloon = new VirtioBalloon(this, device_bus);
+        }
+        if(settings.virtio_gpu)
+        {
+            this.devices.virtio_gpu = new VirtioGPU(this, device_bus);
         }
 
         if(true)
