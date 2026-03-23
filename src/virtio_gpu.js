@@ -1,5 +1,5 @@
 import { dbg_assert, dbg_log } from "./log.js";
-import { VirtIO, VIRTIO_F_VERSION_1 } from "./virtio.js";
+import { VirtIO, VIRTIO_F_VERSION_1, VirtQueueBufferChain } from "./virtio.js";
 import { LOG_VIRTIO } from "./const.js";
 
 // For Types Only
@@ -777,7 +777,7 @@ VirtioGPU.prototype.cmd_get_edid = function(queue_id, bufchain, view)
 /**
  * Send a simple response with only a control header.
  * @param {number} queue_id
- * @param {*} bufchain
+ * @param {VirtQueueBufferChain} bufchain
  * @param {number} resp_type
  */
 VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
@@ -794,7 +794,7 @@ VirtioGPU.prototype.send_response = function(queue_id, bufchain, resp_type)
 /**
  * Send a response with additional data after the header.
  * @param {number} queue_id
- * @param {*} bufchain
+ * @param {VirtQueueBufferChain} bufchain
  * @param {Uint8Array} data
  */
 VirtioGPU.prototype.send_response_data = function(queue_id, bufchain, data)

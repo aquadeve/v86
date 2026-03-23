@@ -39,6 +39,8 @@ export default [
                 "BroadcastChannel": "readonly",
                 "HTMLElement": "readonly",
                 "HTMLTextAreaElement": "readonly",
+                "HTMLCanvasElement": "readonly",
+                "WebGL2RenderingContext": "readonly",
 
                 "AudioContext": "readonly",
                 "AudioWorkletProcessor": "readonly",
