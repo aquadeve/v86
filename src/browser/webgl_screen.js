@@ -47,9 +47,11 @@ export function WebGLScreenAdapter(options, bus)
     // ----------------------------------------------------------------
 
     /** @type {WebGL2RenderingContext|WebGLRenderingContext|null} */
-    let gl = canvas.getContext("webgl2", { alpha: false, antialias: false }) ||
-             canvas.getContext("webgl", { alpha: false, antialias: false }) ||
-             canvas.getContext("experimental-webgl", { alpha: false, antialias: false });
+    let gl = /** @type {WebGL2RenderingContext|WebGLRenderingContext|null} */ (
+        canvas.getContext("webgl2", { alpha: false, antialias: false }) ||
+        canvas.getContext("webgl", { alpha: false, antialias: false }) ||
+        canvas.getContext("experimental-webgl", { alpha: false, antialias: false })
+    );
 
     /** @type {CanvasRenderingContext2D|null} */
     let ctx2d = null;
@@ -155,7 +157,7 @@ export function WebGLScreenAdapter(options, bus)
         if(!vert || !frag)
         {
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -164,7 +166,7 @@ export function WebGLScreenAdapter(options, bus)
         {
             dbg_log("WebGLScreenAdapter: createProgram failed");
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -178,7 +180,7 @@ export function WebGLScreenAdapter(options, bus)
             gl.deleteProgram(gl_program);
             gl_program = null;
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -201,7 +203,7 @@ export function WebGLScreenAdapter(options, bus)
             gl.deleteProgram(gl_program);
             gl_program = null;
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -218,7 +220,7 @@ export function WebGLScreenAdapter(options, bus)
             gl.deleteProgram(gl_program);
             gl_program = null;
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -235,7 +237,7 @@ export function WebGLScreenAdapter(options, bus)
             gl.deleteProgram(gl_program);
             gl_program = null;
             gl = null;
-            ctx2d = canvas.getContext("2d", { alpha: false });
+            ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
             return;
         }
 
@@ -255,7 +257,7 @@ export function WebGLScreenAdapter(options, bus)
     if(!gl)
     {
         dbg_log("WebGLScreenAdapter: WebGL not available, falling back to Canvas 2D");
-        ctx2d = canvas.getContext("2d", { alpha: false });
+        ctx2d = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d", { alpha: false }));
     }
 
     // ----------------------------------------------------------------
