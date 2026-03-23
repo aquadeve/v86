@@ -13,8 +13,7 @@ import { dbg_log } from "../log.js";
  *   "virtio-gpu-update-buffer" { buffer, resource_width, resource_height, format, ... }
  *
  * @constructor
- * @param {Object} options
- * @param {Element} options.container  DOM element that will host the canvas
+ * @param {{container: Element}} options
  * @param {Object} bus                 v86 BusConnector
  */
 export function WebGLScreenAdapter(options, bus)
@@ -392,7 +391,8 @@ export function WebGLScreenAdapter(options, bus)
      */
     this.make_screenshot = function()
     {
-        const img = document.createElement("img");
+        /** @type {HTMLImageElement} */
+        const img = /** @type {HTMLImageElement} */ (document.createElement("img"));
         img.src = canvas.toDataURL("image/png");
         return img;
     };
