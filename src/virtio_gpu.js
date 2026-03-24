@@ -359,8 +359,13 @@ VirtioGPU.prototype.cmd_get_display_info = function(queue_id, bufchain, view)
         const base = 24 + i * 24;
         const scanout = i < this.scanouts.length ? this.scanouts[i] : null;
 
-        if(scanout && scanout.enabled)
+        if(scanout)
         {
+            // Always advertise configured scanouts as enabled so that the
+            // guest driver (e.g. Linux virtio-gpu DRM) recognises them and
+            // sets up a framebuffer.  The enabled/disabled distinction is
+            // handled separately via the resource_id check in
+            // cmd_resource_flush.
             resp_view.setUint32(base + 0,  scanout.x, true);
             resp_view.setUint32(base + 4,  scanout.y, true);
             resp_view.setUint32(base + 8,  scanout.width, true);
