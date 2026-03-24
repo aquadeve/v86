@@ -327,7 +327,9 @@ export interface V86Options {
     /**
      * Enable virtio-gpu device for WebGL-accelerated graphics.
      * Set to true to use the main screen_container, or provide an
-     * object with a custom container element.
+     * object with a custom container element. SeaBIOS/VGABIOS output
+     * still uses the normal VGA screen adapter; the virtio-gpu output
+     * appears only after the guest OS loads a compatible driver.
      * @default false
      */
     virtio_gpu?: boolean | { container: HTMLElement };

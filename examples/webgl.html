@@ -1,10 +1,17 @@
 <!doctype html>
+<meta charset="utf-8">
 <title>WebGL virtio-gpu Example</title>
 
 <style>
 body { background: #1a1a1a; color: #eee; font-family: sans-serif; margin: 0; padding: 16px; }
 h1 { font-size: 1.2em; margin: 0 0 8px; }
 p  { font-size: 0.85em; margin: 0 0 12px; color: #aaa; }
+.panels { display: flex; flex-wrap: wrap; gap: 16px; }
+.panel { min-width: 320px; }
+.panel h2 { font-size: 0.95em; margin: 0 0 8px; }
+#display_container div { white-space: pre; font: 14px monospace; line-height: 14px; }
+#display_container canvas { display: none; }
+#display_container,
 #webgl_container canvas { display: block; border: 1px solid #444; }
 #status { margin-top: 8px; font-size: 0.8em; color: #888; }
 </style>
@@ -15,14 +22,28 @@ p  { font-size: 0.85em; margin: 0 0 12px; color: #aaa; }
     guest framebuffer onto a WebGL canvas for hardware-accelerated display.
     A Canvas&nbsp;2D fallback is used automatically when WebGL is unavailable.
 </p>
+<p>
+    SeaBIOS/VGABIOS output still goes through the normal VGA adapter, so the
+    boot screen appears in the standard display panel first. The WebGL panel
+    only starts updating after the guest OS loads a <strong>virtio-gpu</strong>
+    driver, which is why the Linux example works but BIOS text does not appear
+    there.
+</p>
 
-<!--
-    Container for the WebGL screen adapter.
-    Unlike the standard VGA ScreenAdapter, WebGLScreenAdapter only needs a
-    <canvas> element (the text-mode <div> is not used here).
--->
-<div id="webgl_container">
-    <canvas></canvas>
+<div class="panels">
+    <div class="panel">
+        <h2>Standard VGA display (SeaBIOS / boot output)</h2>
+        <div id="display_container">
+            <div></div>
+            <canvas></canvas>
+        </div>
+    </div>
+    <div class="panel">
+        <h2>WebGL virtio-gpu display (guest driver required)</h2>
+        <div id="webgl_container">
+            <canvas></canvas>
+        </div>
+    </div>
 </div>
 <div id="status">Starting&hellip;</div>
 
@@ -44,6 +65,8 @@ window.onload = function()
         // even though virtio-gpu takes over display output at runtime.
         vga_memory_size: 8 * 1024 * 1024,
 
+        screen_container: document.getElementById("display_container"),
+
         bios: { url: "../bios/seabios.bin" },
         vga_bios: { url: "../bios/vgabios.bin" },
 
@@ -64,12 +87,17 @@ window.onload = function()
 
     emulator.add_listener("emulator-ready", function()
     {
-        status_el.textContent = "Emulator ready — booting guest…";
+        status_el.textContent = "Emulator ready — booting with the VGA display active.";
     });
 
     emulator.add_listener("emulator-started", function()
     {
-        status_el.textContent = "Guest running (virtio-gpu / WebGL)";
+        status_el.textContent = "Guest running — waiting for the virtio-gpu driver to take over.";
+    });
+
+    emulator.bus.register("virtio-gpu-update-buffer", function()
+    {
+        status_el.textContent = "virtio-gpu is active — WebGL output is now being rendered in the WebGL panel.";
     });
 };
 </script>
