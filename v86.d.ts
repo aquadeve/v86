@@ -19,6 +19,12 @@
  * repository to split an image. V86 appends `-<start-byte>-<end-byte>` to the
  * url.
  *
+ * If you specify `type: "folder"`, v86 treats the `url` as a directory URL on
+ * the HTTP server. The directory must contain a `manifest.json` with the
+ * format `{ "version": 1, "size": <bytes>, "block_size": <bytes> }`. Chunk
+ * files named `<start>-<end>` are fetched on-demand. Use
+ * `tools/disk2folder.py` to convert a raw disk image into this layout.
+ *
  * state images and fixed-size chunks (but not other image types) that end with
  * .zst are automatically decompressed using a built-in zstd decompressor. This
  * has a performance overhead compared to HTTP compression, but will result in
@@ -31,6 +37,12 @@ export type V86Image =
           size: number;
           use_parts?: boolean;
           fixed_chunk_size?: number;
+      }
+    | {
+          /** URL of the directory on the HTTP server (e.g. "ROOT_DISK/"). */
+          url: string;
+          /** Must be "folder" to enable directory-based loading. */
+          type: "folder";
       }
     //| { buffer: File; async?: boolean; }; // only in browsers: https://developer.mozilla.org/en-US/docs/Web/API/File
     | { buffer: ArrayBuffer };
