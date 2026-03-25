@@ -125,6 +125,40 @@ else if(globalThis["scheduler"] && typeof globalThis["scheduler"]["postTask"] ==
     v86.prototype.register_yield = function() {};
     v86.prototype.unregister_yield = function() {};
 }
+else if(typeof MessageChannel !== "undefined")
+{
+    v86.prototype.register_yield = function()
+    {
+        this.timeout = null;
+        this.channel = new MessageChannel();
+        this.channel.port1.onmessage = e => this.yield_callback(e.data);
+    };
+
+    v86.prototype.yield = function(t, tick)
+    {
+        this.timeout = this.timeout && clearTimeout(this.timeout);
+
+        if(t < 1)
+        {
+            this.channel.port2.postMessage(tick);
+        }
+        else
+        {
+            this.timeout = setTimeout(() => this.channel.port2.postMessage(tick), t);
+        }
+    };
+
+    v86.prototype.unregister_yield = function()
+    {
+        this.timeout = this.timeout && clearTimeout(this.timeout);
+        if(this.channel)
+        {
+            this.channel.port1.close();
+            this.channel.port2.close();
+        }
+        this.channel = null;
+    };
+}
 else if(typeof Worker !== "undefined")
 {
     // XXX: This has a slightly lower throughput compared to window.postMessage

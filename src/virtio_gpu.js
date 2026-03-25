@@ -258,6 +258,91 @@ VirtioGPU.prototype._read_from_backing = function(resource, logical_offset, leng
 };
 
 /**
+ * Copy a logical byte range from concatenated backing entries into an existing buffer.
+ * @param {!Object} resource
+ * @param {number} logical_offset
+ * @param {!Uint8Array} target
+ * @param {number} target_offset
+ * @param {number} length
+ * @returns {boolean}
+ */
+VirtioGPU.prototype._copy_from_backing = function(resource, logical_offset, target, target_offset, length)
+{
+    if(length < 0 || logical_offset < 0 || target_offset < 0 || target_offset + length > target.length)
+    {
+        return false;
+    }
+
+    if(length === 0)
+    {
+        return true;
+    }
+
+    let skip = logical_offset;
+
+    for(let i = 0; i < resource.backing_entries.length; i++)
+    {
+        const entry = resource.backing_entries[i];
+        const entry_len = entry.length >>> 0;
+
+        if(skip >= entry_len)
+        {
+            skip -= entry_len;
+            continue;
+        }
+
+        const src_start = entry.addr + skip;
+        const src_end = src_start + length;
+
+        if(skip + length <= entry_len)
+        {
+            if(src_start < 0 || src_end > this.cpu.mem8.length)
+            {
+                return false;
+            }
+
+            target.set(this.cpu.mem8.subarray(src_start, src_end), target_offset);
+            return true;
+        }
+
+        break;
+    }
+
+    let out_off = target_offset;
+    let remaining = length;
+    skip = logical_offset;
+
+    for(let i = 0; i < resource.backing_entries.length && remaining > 0; i++)
+    {
+        const entry = resource.backing_entries[i];
+        const entry_len = entry.length >>> 0;
+
+        if(skip >= entry_len)
+        {
+            skip -= entry_len;
+            continue;
+        }
+
+        const take = Math.min(entry_len - skip, remaining);
+        const src_start = entry.addr + skip;
+        const src_end = src_start + take;
+
+        if(src_start < 0 || src_end > this.cpu.mem8.length)
+        {
+            return false;
+        }
+
+        target.set(this.cpu.mem8.subarray(src_start, src_end), out_off);
+
+        out_off += take;
+        remaining -= take;
+        skip = 0;
+    }
+
+    return remaining === 0;
+};
+
+/**
  * Handle controlq notifications from the driver.
  * @param {number} queue_id
  */
@@ -585,19 +670,31 @@ VirtioGPU.prototype.cmd_transfer_to_host_2d = function(queue_id, bufchain, view)
     const stride = resource.width * bpp;
     const row_bytes = rect_w * bpp;
 
-    for(let row = 0; row < rect_h; row++)
+    if(rect_x === 0 && rect_w === resource.width)
     {
-        const src_offset = offset + row * stride;
-        const src = this._read_from_backing(resource, src_offset, row_bytes);
+        const dst_start = rect_y * stride;
+        const total_bytes = rect_h * stride;
 
-        if(!src)
+        if(!this._copy_from_backing(resource, offset, resource.pixels, dst_start, total_bytes))
         {
             this.send_response(queue_id, bufchain, VIRTIO_GPU_RESP_ERR_UNSPEC);
             return;
         }
 
+        this.send_response(queue_id, bufchain, VIRTIO_GPU_RESP_OK_NODATA);
+        return;
+    }
+
+    for(let row = 0; row < rect_h; row++)
+    {
+        const src_offset = offset + row * stride;
         const dst_start = (rect_y + row) * stride + rect_x * bpp;
-        resource.pixels.set(src, dst_start);
+
+        if(!this._copy_from_backing(resource, src_offset, resource.pixels, dst_start, row_bytes))
+        {
+            this.send_response(queue_id, bufchain, VIRTIO_GPU_RESP_ERR_UNSPEC);
+            return;
+        }
     }
 
     this.send_response(queue_id, bufchain, VIRTIO_GPU_RESP_OK_NODATA);

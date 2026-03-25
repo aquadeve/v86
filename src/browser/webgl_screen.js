@@ -66,6 +66,12 @@ export function WebGLScreenAdapter(options, bus)
     let gl_vertex_buf = null;
 
     /** @type {number} */
+    let gl_texture_width = 0;
+
+    /** @type {number} */
+    let gl_texture_height = 0;
+
+    /** @type {number} */
     let gl_attrib_pos = -1;
 
     /** @type {WebGLUniformLocation|null} */
@@ -242,6 +248,7 @@ export function WebGLScreenAdapter(options, bus)
         }
 
         gl.bindTexture(gl.TEXTURE_2D, gl_texture);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -387,8 +394,12 @@ export function WebGLScreenAdapter(options, bus)
      * @param {Uint8Array} rgba_data
      * @param {number} tex_w
      * @param {number} tex_h
+     * @param {number} dirty_x
+     * @param {number} dirty_y
+     * @param {number} dirty_w
+     * @param {number} dirty_h
      */
-    function render_frame(rgba_data, tex_w, tex_h)
+    function render_frame(rgba_data, tex_w, tex_h, dirty_x, dirty_y, dirty_w, dirty_h)
     {
         if(gl)
         {
@@ -400,13 +411,42 @@ export function WebGLScreenAdapter(options, bus)
             gl.viewport(0, 0, canvas.width, canvas.height);
 
             gl.bindTexture(gl.TEXTURE_2D, gl_texture);
-            gl.texImage2D(
-                gl.TEXTURE_2D, 0,
-                gl.RGBA,
-                tex_w, tex_h, 0,
-                gl.RGBA, gl.UNSIGNED_BYTE,
-                rgba_data
-            );
+            if(gl_texture_width !== tex_w || gl_texture_height !== tex_h)
+            {
+                gl.texImage2D(
+                    gl.TEXTURE_2D, 0,
+                    gl.RGBA,
+                    tex_w, tex_h, 0,
+                    gl.RGBA, gl.UNSIGNED_BYTE,
+                    null
+                );
+                gl_texture_width = tex_w;
+                gl_texture_height = tex_h;
+            }
+
+            if(dirty_x === 0 && dirty_w === tex_w && dirty_h > 0 && dirty_y + dirty_h <= tex_h)
+            {
+                const row_stride = tex_w * 4;
+                const start = dirty_y * row_stride;
+                const end = start + dirty_h * row_stride;
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D, 0,
+                    0, dirty_y,
+                    tex_w, dirty_h,
+                    gl.RGBA, gl.UNSIGNED_BYTE,
+                    rgba_data.subarray(start, end)
+                );
+            }
+            else
+            {
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D, 0,
+                    0, 0,
+                    tex_w, tex_h,
+                    gl.RGBA, gl.UNSIGNED_BYTE,
+                    rgba_data
+                );
+            }
 
             gl.useProgram(gl_program);
             gl.bindBuffer(gl.ARRAY_BUFFER, gl_vertex_buf);
@@ -466,6 +506,10 @@ export function WebGLScreenAdapter(options, bus)
         const resource_width = ev.resource_width;
         const resource_height = ev.resource_height;
         const format = ev.format;
+        const dirty_x = ev.x >>> 0;
+        const dirty_y = ev.y >>> 0;
+        const dirty_w = ev.width >>> 0;
+        const dirty_h = ev.height >>> 0;
 
         if(!buffer || !resource_width || !resource_height)
         {
@@ -473,7 +517,7 @@ export function WebGLScreenAdapter(options, bus)
         }
 
         const rgba = to_rgba(buffer, format);
-        render_frame(rgba, resource_width, resource_height);
+        render_frame(rgba, resource_width, resource_height, dirty_x, dirty_y, dirty_w, dirty_h);
     };
 
     bus.register("virtio-gpu-set-size", on_set_size, this);
