@@ -781,7 +781,8 @@ FolderBuffer.prototype.get = function(offset, len, fn)
         return;
     }
 
-    const block_size = this.block_size;
+    dbg_assert(this.block_size !== undefined);
+    const block_size = /** @type {number} */ (this.block_size);
     const start_chunk = Math.floor(offset / block_size);
     const end_chunk = Math.ceil((offset + len) / block_size);
     const total_chunks = end_chunk - start_chunk;
