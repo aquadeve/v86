@@ -415,7 +415,7 @@ V86.prototype.continue_init = async function(emulator, options)
             file.async = false;
         }
 
-        if(file.url && !file.async)
+        if(file.url && !file.async && file.type !== "folder")
         {
             files_to_load.push({
                 name: name,

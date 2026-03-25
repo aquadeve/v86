@@ -682,6 +682,166 @@ AsyncFileBuffer.prototype.get_as_file = function(name)
     return file;
 };
 
+/**
+ * Asynchronous access to a virtual disk image stored as a directory of chunk
+ * files on an HTTP server.  A `manifest.json` in the directory describes the
+ * total disk size and the fixed chunk size; individual chunks are fetched
+ * on-demand and named `<start>-<end>` (matching the convention used by
+ * split-image.py / AsyncXHRPartfileBuffer).
+ *
+ * Usage:
+ *   hda: { url: "ROOT_DISK/", type: "folder" }
+ *
+ * The manifest format is:
+ *   { "version": 1, "size": <bytes>, "block_size": <bytes> }
+ *
+ * Use tools/disk2folder.py to create a compatible directory from a raw disk
+ * image.
+ *
+ * @constructor
+ * @param {string} baseurl  URL of the directory (must end with "/")
+ */
+export function FolderBuffer(baseurl)
+{
+    if(!baseurl.endsWith("/"))
+    {
+        baseurl += "/";
+    }
+
+    this.baseurl = baseurl;
+
+    /** @type {number|undefined} */
+    this.byteLength = undefined;
+
+    /** @type {number|undefined} */
+    this.block_size = undefined;
+
+    this.block_cache = new Map();
+    this.block_cache_is_write = new Set();
+
+    this.onload = undefined;
+    this.onprogress = undefined;
+}
+
+FolderBuffer.prototype.load = function()
+{
+    load_file(this.baseurl + "manifest.json", {
+        done: function(buffer)
+        {
+            let manifest;
+            try
+            {
+                const text = new TextDecoder().decode(new Uint8Array(buffer));
+                manifest = JSON.parse(text);
+            }
+            catch(e)
+            {
+                dbg_log("FolderBuffer: failed to parse manifest.json at " + this.baseurl + ": " + e);
+                this.onload && this.onload(Object.create(null));
+                return;
+            }
+
+            dbg_assert(manifest.version === 1, "FolderBuffer: unsupported manifest version " + manifest.version);
+            dbg_assert(typeof manifest.size === "number", "FolderBuffer: manifest missing 'size'");
+            dbg_assert(typeof manifest.block_size === "number", "FolderBuffer: manifest missing 'block_size'");
+
+            if(manifest.version !== 1 || typeof manifest.size !== "number" || typeof manifest.block_size !== "number")
+            {
+                dbg_log("FolderBuffer: invalid manifest.json at " + this.baseurl);
+                this.onload && this.onload(Object.create(null));
+                return;
+            }
+
+            this.byteLength = manifest.size;
+            this.block_size = manifest.block_size;
+
+            this.cache_reads = true;
+
+            this.onload && this.onload(Object.create(null));
+        }.bind(this),
+    });
+};
+
+/**
+ * @param {number} offset
+ * @param {number} len
+ * @param {function(!Uint8Array)} fn
+ */
+FolderBuffer.prototype.get = function(offset, len, fn)
+{
+    dbg_assert(offset + len <= this.byteLength);
+    dbg_assert(offset % BLOCK_SIZE === 0);
+    dbg_assert(len % BLOCK_SIZE === 0);
+    dbg_assert(len);
+
+    const block = this.get_from_cache(offset, len);
+    if(block)
+    {
+        fn(block);
+        return;
+    }
+
+    const block_size = this.block_size;
+    const start_chunk = Math.floor(offset / block_size);
+    const end_chunk = Math.ceil((offset + len) / block_size);
+    const total_chunks = end_chunk - start_chunk;
+    const result = new Uint8Array(total_chunks * block_size);
+    let finished = 0;
+
+    for(let i = 0; i < total_chunks; i++)
+    {
+        const chunk_start = (start_chunk + i) * block_size;
+
+        const cached = this.get_from_cache(chunk_start, block_size);
+        if(cached)
+        {
+            // get_from_cache returns exactly block_size bytes when all sub-blocks
+            // are cached, so the offset into result is chunk_idx * block_size.
+            dbg_assert(cached.length === block_size);
+            result.set(cached, i * block_size);
+            finished++;
+            if(finished === total_chunks)
+            {
+                const m_offset = offset - start_chunk * block_size;
+                fn(result.subarray(m_offset, m_offset + len));
+            }
+        }
+        else
+        {
+            (function(self, chunk_start, chunk_idx)
+            {
+                load_file(self.baseurl + chunk_start + "-" + (chunk_start + block_size), {
+                    done: function(buf)
+                    {
+                        const chunk = new Uint8Array(buf);
+                        result.set(chunk, chunk_idx * block_size);
+                        self.handle_read(chunk_start, block_size, chunk);
+
+                        finished++;
+                        if(finished === total_chunks)
+                        {
+                            const m_offset = offset - start_chunk * block_size;
+                            fn(result.subarray(m_offset, m_offset + len));
+                        }
+                    },
+                });
+            })(this, chunk_start, i);
+        }
+    }
+};
+
+/** @this {FolderBuffer} */
+FolderBuffer.prototype.get_buffer = function(fn)
+{
+    fn();
+};
+
+FolderBuffer.prototype.get_from_cache = AsyncXHRBuffer.prototype.get_from_cache;
+FolderBuffer.prototype.set = AsyncXHRBuffer.prototype.set;
+FolderBuffer.prototype.handle_read = AsyncXHRBuffer.prototype.handle_read;
+FolderBuffer.prototype.get_state = AsyncXHRBuffer.prototype.get_state;
+FolderBuffer.prototype.set_state = AsyncXHRBuffer.prototype.set_state;
+
 export function buffer_from_object(obj, zstd_decompress_worker)
 {
     // TODO: accept Uint8Array, ArrayBuffer, File, url rather than { url }
@@ -721,7 +881,11 @@ export function buffer_from_object(obj, zstd_decompress_worker)
     {
         // Note: Only async for now
 
-        if(obj.use_parts)
+        if(obj.type === "folder")
+        {
+            return new FolderBuffer(obj.url);
+        }
+        else if(obj.use_parts)
         {
             return new AsyncXHRPartfileBuffer(obj.url, obj.size, obj.fixed_chunk_size, false, zstd_decompress_worker);
         }
