@@ -31,9 +31,7 @@ namespace x86Emulator.ATADevice
             if (File.Exists(path))
             {
                 imagePath = path;
-                Stream raw = new FileStream(path, FileMode.Open, FileAccess.ReadWrite,
-                    FileShare.Read, SectorSize * 8, FileOptions.RandomAccess);
-                diskStream = IsVhd(path) ? VhdStream.OpenOrPassThrough(raw) : raw;
+                diskStream = DiskImageLoader.OpenFromPath(path);
                 UpdateGeometry();
                 Reset();
             }
@@ -44,27 +42,11 @@ namespace x86Emulator.ATADevice
             if (file != null)
             {
                 imagePath = file.Path;
-                Stream raw;
-                try
-                {
-                    var rStream = await file.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite);
-                    raw = rStream.AsStream();
-                }
-                catch
-                {
-                    // Fall back to read-only if the image is write-protected or locked.
-                    System.Diagnostics.Debug.WriteLine("[HDD] Could not open image for write; falling back to read-only.");
-                    raw = await file.OpenStreamForReadAsync();
-                }
-                diskStream = IsVhd(file.Name) ? VhdStream.OpenOrPassThrough(raw) : raw;
+                diskStream = await DiskImageLoader.OpenFromStorageFileAsync(file);
                 UpdateGeometry();
                 Reset();
             }
         }
-
-        private static bool IsVhd(string filename) =>
-            !string.IsNullOrEmpty(filename) &&
-            filename.EndsWith(".vhd", StringComparison.OrdinalIgnoreCase);
 
         private void UpdateGeometry()
         {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using x86Emulator.Devices;
 
 namespace x86Emulator.ATADevice
 {
@@ -58,7 +59,7 @@ namespace x86Emulator.ATADevice
             if (filename == null)
                 return;
 
-            isoStream = await filename.OpenStreamForReadAsync();
+            isoStream = await DiskImageLoader.OpenFromStorageFileAsync(filename, readOnly: true);
             Status = DeviceStatus.Ready;
             Error = DeviceError.None;
             ClearSense();
@@ -85,6 +86,27 @@ namespace x86Emulator.ATADevice
             {
                 case 0x08:
                     Reset();
+                    break;
+                case 0x90: // EXECUTE DEVICE DIAGNOSTIC
+                    // ATAPI devices must respond to this during BIOS initialisation.
+                    // Setting DiagnosticPassed tells the BIOS the device is healthy.
+                    CylinderLow = 0x14;
+                    CylinderHigh = 0xEB;
+                    Status = DeviceStatus.Ready | DeviceStatus.SeekComplete;
+                    Error = DeviceError.DiagnosticPassed;
+                    break;
+                case 0x91: // INITIALIZE DEVICE PARAMETERS – accept and ignore
+                case 0xEF: // SET FEATURES – accept and ignore
+                    Status = DeviceStatus.Ready | DeviceStatus.SeekComplete;
+                    Error = DeviceError.None;
+                    break;
+                case 0xEC: // IDENTIFY DEVICE (ATA, not ATAPI)
+                    // ATAPI devices must abort this and expose the ATAPI
+                    // signature (0xEB14) so the BIOS issues 0xA1 instead.
+                    CylinderLow = 0x14;
+                    CylinderHigh = 0xEB;
+                    Status = DeviceStatus.Error | DeviceStatus.Ready | DeviceStatus.SeekComplete;
+                    Error = DeviceError.Aborted;
                     break;
                 case 0xA0:
                     StartPacketCommand();
