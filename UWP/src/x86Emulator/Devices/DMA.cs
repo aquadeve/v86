@@ -43,6 +43,27 @@ namespace x86Emulator.Devices
             Memory.BlockWrite(fullAddr, data, length + 1);
         }
 
+        /// <summary>
+        /// Reads DMA bytes FROM guest memory (used by devices such as SB16 that
+        /// read audio data from the guest's DMA buffer rather than writing to it).
+        /// </summary>
+        /// <param name="channel">DMA channel number.</param>
+        /// <param name="count">Number of bytes to read (capped to the channel's count register).</param>
+        /// <returns>Byte array read from guest memory, or an empty array if count is 0.</returns>
+        public byte[] ReadTransfer(int channel, int count)
+        {
+            ushort address  = memAddress[channel];
+            ushort regCount = counts[channel + 1];
+            uint   fullAddr = (uint)((pages[channel] << 16) + address);
+            int    length   = Math.Min(count, regCount + 1);
+
+            if (length <= 0) return new byte[0];
+
+            var data = new byte[length];
+            Memory.BlockRead(fullAddr, data, length);
+            return data;
+        }
+
         private void Reset()
         {
             mask = 0xff;
