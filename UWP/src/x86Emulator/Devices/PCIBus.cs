@@ -110,9 +110,11 @@ namespace x86Emulator.Devices
         }
 
         /// <summary>
-        /// Lowers an IRQ on behalf of a PCI device (no-op if not active).
+        /// Lowers an IRQ on behalf of a PCI device.
+        /// No-op: the x86 PIC model used here is level-triggered and the IRQ
+        /// naturally de-asserts once the device clears its ISR register.
         /// </summary>
-        public void LowerIrq(int bdf) { /* PIC has no explicit IRQ-lower; IRQ is level-triggered */ }
+        public void LowerIrq(int bdf) { }
 
         // ══════════════════════════════════════════════════════════════════════
         // Private

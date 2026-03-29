@@ -54,6 +54,8 @@ namespace x86Emulator
         private readonly SB16 sb16Device;     // Sound Blaster 16 audio
         private readonly NE2000 ne2kDevice;   // NE2000 Ethernet
         private VirtioGPU virtioGPU;          // VirtIO GPU (D3D11-backed)
+        private readonly VirtioConsole virtioConsole; // VirtIO serial console
+        private readonly VirtioNet virtioNet;         // VirtIO network adapter
         private readonly ATA ataDevice;
 
         private List<IOPort> ioPorts;
@@ -97,6 +99,8 @@ namespace x86Emulator
             uart1  = new UART16550(0x2F8); // COM2 IRQ3
             sb16Device = new SB16();
             ne2kDevice = new NE2000();
+            virtioConsole = new VirtioConsole();
+            virtioNet     = new VirtioNet();
             // VirtioGPU is created later in CompleteLoading after GpuPassthrough is available
             // Attach HDD and CD-ROM to ATA controller
             try
@@ -223,7 +227,8 @@ namespace x86Emulator
             {
                 FloppyDrives, new CMOS(ataDevice), new Misc(), new PIT8253(),
                 picDevice, keyboard, mouse, dmaController, vgaDevice, ataDevice,
-                pciBus, uart0, uart1, sb16Device, ne2kDevice, virtioGPU
+                pciBus, uart0, uart1, sb16Device, ne2kDevice, virtioGPU,
+                virtioConsole, virtioNet
             };
 
             CPU = new CPU.CPU();

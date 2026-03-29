@@ -18,8 +18,8 @@ namespace x86Emulator.Devices
 
         // ── IER bits ──────────────────────────────────────────────────────────
         private const byte UART_IER_MSI  = 0x08; // Modem Status Changed
-        private const byte UART_IER_THRI = 0x02; // TX Holding Register Empty
-        private const byte UART_IER_RDI  = 0x01; // Receiver Data Available
+        private const byte UART_IER_THRI = 0x02; // TX Holding Register Empty (enable bit)
+        private const byte UART_IER_RDI  = 0x01; // Receiver Data Available (enable bit)
 
         // ── IIR / interrupt source identifiers ────────────────────────────────
         private const byte UART_IIR_MSI    = 0x00; // Modem status (lowest priority)
@@ -198,8 +198,8 @@ namespace x86Emulator.Devices
                         baudRate = (baudRate & 0x00FF) | (uint)(b << 8);
                         break;
                     }
-                    if ((ier & UART_IIR_THRI) == 0 && (b & UART_IIR_THRI) != 0)
-                        ThrowInterrupt(UART_IIR_THRI); // re-throw if was masked
+                    if ((ier & UART_IER_THRI) == 0 && (b & UART_IER_THRI) != 0)
+                        ThrowInterrupt(UART_IIR_THRI); // re-assert TX-empty interrupt if newly enabled
                     ier = (byte)(b & 0x0F);
                     CheckInterrupt();
                     break;

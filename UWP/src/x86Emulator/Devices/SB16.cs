@@ -93,6 +93,7 @@ namespace x86Emulator.Devices
 
         // ── IRQ state ──────────────────────────────────────────────────────────
         private int irqTriggered; // bitmask: SB_IRQ_8BIT | SB_IRQ_16BIT | SB_IRQ_MPU
+        private int currentIrq = SB_IRQ; // dynamically configurable via mixer register 0x80
 
         // ── ASP registers ──────────────────────────────────────────────────────
         private readonly byte[] aspRegisters = new byte[256];
@@ -108,7 +109,8 @@ namespace x86Emulator.Devices
         // ── IDevice / INeedsIRQ / INeedsDMA ────────────────────────────────────
         public event EventHandler                IRQ;
         public event EventHandler<ByteArrayEventArgs> DMA;
-        public int IRQNumber  => SB_IRQ;
+        /// <summary>Returns the currently selected IRQ number (can be changed by the mixer 0x80 register).</summary>
+        public int IRQNumber  => currentIrq;
         public int DMAChannel => dmaChannel;
         public int[] PortsUsed => portsUsed;
 
@@ -314,12 +316,16 @@ namespace x86Emulator.Devices
                 if (dsp16bit)
                 {
                     short s = (short)(data[i * 2] | (data[i * 2 + 1] << 8));
+                    // Signed 16-bit: range [-32768, 32767] → [-1, ~1]
+                    // Unsigned 16-bit: range [0, 65535] → [-1, ~1] (subtract 32768 first)
                     sample = dspSigned ? s / 32768f : (s - 32768) / 32768f;
                 }
                 else
                 {
                     byte raw = data[i];
-                    sample = dspSigned ? (raw - 128) / 128f : (raw - 128) / 128f;
+                    // Signed 8-bit: raw is interpreted as int8, range [-128, 127]
+                    // Unsigned 8-bit: range [0, 255], centre at 128
+                    sample = dspSigned ? (sbyte)raw / 128f : (raw - 128) / 128f;
                 }
                 audioSampleBuffer[dst++] = sample;
             }
@@ -667,7 +673,6 @@ namespace x86Emulator.Devices
             }
         }
 
-        private int currentIrq = SB_IRQ;
         private void SB_IRQ_SetIRQ(int irqNum) { currentIrq = irqNum; }
 
         // ══════════════════════════════════════════════════════════════════════
@@ -751,7 +756,11 @@ namespace x86Emulator.Devices
 
         private void EnsureAudioBuffer(int needed)
         {
-            // audioSampleBuffer is pre-allocated at SB_DMA_BUFSIZE; resize if needed
+            if (audioSampleBuffer.Length < needed)
+            {
+                // audioSampleBuffer is fixed-size; if somehow we exceed it, clamp
+                Debug.WriteLine($"[SB16] EnsureAudioBuffer: needed={needed} > capacity={audioSampleBuffer.Length}, clamping");
+            }
         }
 
         private unsafe void PushAudioFrame()

@@ -522,15 +522,15 @@ namespace x86Emulator.Devices
             switch (size)
             {
                 case 8:
-                    if ((dcfg & 1) != 0)
-                        return (uint)(DataPortReadByte() | DataPortReadByte() << 8);
+                    // 8-bit read always returns a single byte
                     return DataPortReadByte();
                 case 32:
                     return (uint)(DataPortReadByte() |
                                   DataPortReadByte() << 8 |
                                   DataPortReadByte() << 16 |
                                   DataPortReadByte() << 24);
-                default: // 16
+                default: // 16-bit
+                    // Word transfer mode (dcfg bit 0): read two bytes; byte mode: one byte
                     if ((dcfg & 1) != 0)
                         return (uint)(DataPortReadByte() | DataPortReadByte() << 8);
                     return DataPortReadByte();
