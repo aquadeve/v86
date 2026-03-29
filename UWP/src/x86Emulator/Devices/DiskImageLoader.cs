@@ -11,7 +11,7 @@ namespace x86Emulator.Devices
     /// </summary>
     public enum DiskImageType
     {
-        /// <summary>Raw disk image (.img or unrecognised extension).</summary>
+        /// <summary>Raw disk image (.img or unrecognized extension).</summary>
         Raw,
         /// <summary>Microsoft VHD (fixed or dynamic).</summary>
         Vhd,
@@ -27,6 +27,7 @@ namespace x86Emulator.Devices
     /// </summary>
     public static class DiskImageLoader
     {
+        private const int DefaultBufferSize = 4096;
         /// <summary>
         /// Determines the image type from the file name extension.
         /// </summary>
@@ -68,14 +69,14 @@ namespace x86Emulator.Devices
             try
             {
                 raw = new FileStream(path, FileMode.Open, access, share,
-                    bufferSize: 4096, FileOptions.RandomAccess);
+                    bufferSize: DefaultBufferSize, FileOptions.RandomAccess);
             }
             catch (UnauthorizedAccessException)
             {
                 // Fall back to read-only if the image or folder is write-protected
                 Debug.WriteLine($"[DiskImageLoader] Read-write denied, falling back to read-only: {path}");
                 raw = new FileStream(path, FileMode.Open, FileAccess.Read,
-                    FileShare.ReadWrite, bufferSize: 4096, FileOptions.RandomAccess);
+                    FileShare.ReadWrite, bufferSize: DefaultBufferSize, FileOptions.RandomAccess);
             }
 
             return WrapIfNeeded(raw, path);

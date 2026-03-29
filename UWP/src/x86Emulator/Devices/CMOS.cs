@@ -117,18 +117,18 @@ namespace x86Emulator.Devices
                             if (ataDevice.HardDrives.Length == 0)
                                 return 0;
                             return ataDevice.HardDrives[0].Heads;
-                        case 0x1e:  /* HDD1 Write Precomp - low */
+                        case 0x1e:  /* Drive 0 (C:) Write Precomp - low */
                             return 0xFF;
-                        case 0x1f:  /* HDD1 Write Precomp - high */
+                        case 0x1f:  /* Drive 0 (C:) Write Precomp - high */
                             return 0xFF;
-                        case 0x20:  /* HDD1 Drive control byte */
+                        case 0x20:  /* Drive 0 (C:) Drive control byte */
                             // Bit 3 = more than 8 heads, bit 6/7 per v86 reference
                             return 0xC8;
-                        case 0x21:  /* HDD1 Landing zone - low */
+                        case 0x21:  /* Drive 0 (C:) Landing zone - low */
                             if (ataDevice.HardDrives.Length == 0)
                                 return 0;
                             return (byte)ataDevice.HardDrives[0].Cylinders;
-                        case 0x22:  /* HDD1 Landing zone - high */
+                        case 0x22:  /* Drive 0 (C:) Landing zone - high */
                             if (ataDevice.HardDrives.Length == 0)
                                 return 0;
                             return (byte)(ataDevice.HardDrives[0].Cylinders >> 8);

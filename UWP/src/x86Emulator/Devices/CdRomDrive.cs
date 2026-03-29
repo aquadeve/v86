@@ -95,7 +95,7 @@ namespace x86Emulator.ATADevice
                     Status = DeviceStatus.Ready | DeviceStatus.SeekComplete;
                     Error = DeviceError.DiagnosticPassed;
                     break;
-                case 0x91: // INITIALIZE DEVICE PARAMETERS – accept and ignore
+                case 0x91: // INITIALIZE DEVICE PARAMETERS - accept and ignore
                 case 0xEF: // SET FEATURES – accept and ignore
                     Status = DeviceStatus.Ready | DeviceStatus.SeekComplete;
                     Error = DeviceError.None;
