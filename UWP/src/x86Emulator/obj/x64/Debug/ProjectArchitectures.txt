@@ -1,0 +1,3 @@
+C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86DisasmUWP\x86DisasmUWP.csproj;x64
+C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Emulator\x86Emulator.csproj;x64
+C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Native\x86Native.vcxproj;x64
