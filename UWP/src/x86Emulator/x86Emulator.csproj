@@ -167,8 +167,16 @@
     <Compile Include="Devices\PIC8259.cs" />
     <Compile Include="Devices\PIT8253.cs" />
     <Compile Include="Devices\GpuPassthrough.cs" />
+    <Compile Include="Devices\NE2000.cs" />
+    <Compile Include="Devices\PCIBus.cs" />
+    <Compile Include="Devices\SB16.cs" />
+    <Compile Include="Devices\UART16550.cs" />
     <Compile Include="Devices\VGA.cs" />
     <Compile Include="Devices\VhdStream.cs" />
+    <Compile Include="Devices\VirtIO.cs" />
+    <Compile Include="Devices\VirtioConsole.cs" />
+    <Compile Include="Devices\VirtioGPU.cs" />
+    <Compile Include="Devices\VirtioNet.cs" />
     <Compile Include="DynamicSettingsDialog.cs" />
     <Compile Include="GameGeometry.cs" />
     <Compile Include="GUI\WIN2D.cs" />

@@ -48,6 +48,14 @@ namespace x86Emulator
         private readonly PIC8259 picDevice; // interrupt controller
         private readonly VGA vgaDevice;
         private readonly DMAController dmaController; // Direct Memory Access
+        private readonly PCIBus pciBus;       // PCI configuration space controller
+        private readonly UART16550 uart0;     // COM1 serial port
+        private readonly UART16550 uart1;     // COM2 serial port
+        private readonly SB16 sb16Device;     // Sound Blaster 16 audio
+        private readonly NE2000 ne2kDevice;   // NE2000 Ethernet
+        private VirtioGPU virtioGPU;          // VirtIO GPU (D3D11-backed)
+        private readonly VirtioConsole virtioConsole; // VirtIO serial console
+        private readonly VirtioNet virtioNet;         // VirtIO network adapter
         private readonly ATA ataDevice;
 
         private List<IOPort> ioPorts;
@@ -86,6 +94,14 @@ namespace x86Emulator
             keyboard = new KeyboardDevice();
             mouse = new MouseDevice();
             ataDevice = new ATA();
+            pciBus = new PCIBus(picDevice);
+            uart0  = new UART16550(0x3F8); // COM1 IRQ4
+            uart1  = new UART16550(0x2F8); // COM2 IRQ3
+            sb16Device = new SB16();
+            ne2kDevice = new NE2000();
+            virtioConsole = new VirtioConsole();
+            virtioNet     = new VirtioNet();
+            // VirtioGPU is created later in CompleteLoading after GpuPassthrough is available
             // Attach HDD and CD-ROM to ATA controller
             try
             {
@@ -203,9 +219,16 @@ namespace x86Emulator
             RunGUICycle();
             gui.Init();
 
+            // Create VirtIO GPU once the GPU passthrough (D3D11) is available
+            virtioGPU = new VirtioGPU(gui.GpuPassthrough);
+            virtioGPU.FrameUpdated += (s, e) => gui.SetVirtioGPUFrame(virtioGPU.CurrentFrame);
+
             devices = new IDevice[]
             {
-                FloppyDrives, new CMOS(ataDevice), new Misc(), new PIT8253(), picDevice, keyboard, mouse, dmaController, vgaDevice, ataDevice
+                FloppyDrives, new CMOS(ataDevice), new Misc(), new PIT8253(),
+                picDevice, keyboard, mouse, dmaController, vgaDevice, ataDevice,
+                pciBus, uart0, uart1, sb16Device, ne2kDevice, virtioGPU,
+                virtioConsole, virtioNet
             };
 
             CPU = new CPU.CPU();
@@ -276,6 +299,15 @@ namespace x86Emulator
 
             if (device == null)
                 return;
+
+            // SB16 DMA is a READ transfer: audio data flows from guest memory
+            // to the device (then to the audio output), not the other way around.
+            if (device is SB16 sb16)
+            {
+                var audioData = dmaController.ReadTransfer(sb16.DMAChannel, e.ByteArray.Length);
+                sb16.OnDmaData(audioData);
+                return;
+            }
 
             dmaController.DoTransfer(device.DMAChannel, e.ByteArray);
         }

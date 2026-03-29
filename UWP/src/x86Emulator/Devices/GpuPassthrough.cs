@@ -160,6 +160,22 @@ namespace x86Emulator.Devices
                 : null;
         }
 
+        /// <summary>
+        /// Uploads a pre-converted BGRA byte array directly to the GPU texture.
+        /// Used by <see cref="VirtioGPU"/> which performs its own format conversion.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CanvasBitmap"/> backed by the updated GPU texture, or
+        /// <c>null</c> if the renderer is not yet initialised or the upload failed.
+        /// </returns>
+        public CanvasBitmap UploadBgraFrameRaw(byte[] bgraData, uint width, uint height)
+        {
+            if (renderer == null) return null;
+            return renderer.UploadBgraFrame(bgraData, width, height)
+                ? renderer.OutputBitmap
+                : null;
+        }
+
         // ------------------------------------------------------------------
         // Helpers
         // ------------------------------------------------------------------

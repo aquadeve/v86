@@ -37,6 +37,24 @@ namespace x86Emulator.GUI.WIN2D
         // avoiding the per-frame CanvasBitmap allocation used by the legacy path.
         private GpuPassthrough gpuPassthrough;
 
+        /// <summary>
+        /// Exposes the <see cref="GpuPassthrough"/> instance so that the VirtIO GPU
+        /// device can use the same D3D11 texture upload path.
+        /// </summary>
+        public GpuPassthrough GpuPassthrough => gpuPassthrough;
+
+        // When a VirtioGPU frame is available, this overrides the VGA frame.
+        private CanvasBitmap virtioGPUFrame;
+
+        /// <summary>
+        /// Called by <see cref="VirtioGPU"/> when a new frame has been flushed.
+        /// The next render cycle will display this frame instead of the VGA output.
+        /// </summary>
+        public void SetVirtioGPUFrame(CanvasBitmap frame)
+        {
+            virtioGPUFrame = frame;
+        }
+
         public static bool InterpolationLinear = false;
         public static bool FitScreen = false;
         public static bool DumpFrames = false;
@@ -396,6 +414,13 @@ namespace x86Emulator.GUI.WIN2D
 
         public override async Task Cycle()
         {
+            // VirtIO GPU takes priority over legacy VGA when active
+            if (virtioGPUFrame != null)
+            {
+                RenderTarget = virtioGPUFrame;
+                return;
+            }
+
             if (vgaDevice.IsChain4Mode)
                 await CycleMode13h();
             else if (vgaDevice.IsGraphicsMode)
