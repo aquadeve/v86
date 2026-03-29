@@ -65,3 +65,16 @@ C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Emulator\obj\x64\De
 C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Emulator\obj\x64\Debug\.winmd_cache\$Microsoft.Graphics.Canvas.winmd_636340429040000000.json
 C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Emulator\obj\x64\Debug\.winmd_cache\$Microsoft.UI.Xaml.Markup.winmd_639051167240000000.json
 C:\Users\KantzJr\Documents\GitHub\Xbox-UWP-VM-testing\src\x86Emulator\obj\x64\Debug\.winmd_cache\$x86Emulator.UWP.Native.winmd_639098049498094656.json
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\x86Emulator.csproj.AssemblyReference.cache
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\App.g.i.cs
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\App.g.cs
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\MainPage.g.i.cs
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\MainPage.g.cs
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\XamlTypeInfo.g.cs
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\App.xaml
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\MainPage.xaml
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\App.xbf
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\MainPage.xbf
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\XamlSaveStateFile.xml
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\x86Emulator.exe
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Emulator\obj\x64\Debug\x86Emulator.pdb

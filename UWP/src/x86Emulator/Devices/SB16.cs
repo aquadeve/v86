@@ -187,17 +187,17 @@ namespace x86Emulator.Devices
 
                 // Read-Buffer Status / IRQ 8-bit ack
                 case 0x22E:
-                {
-                    if ((irqTriggered & SB_IRQ_8BIT) != 0)
-                        LowerIrq(SB_IRQ_8BIT);
-                    bool ready = readBuffer.Count > 0 && !dspHighspeed;
-                    return (byte)((ready ? 0x80 : 0) | 0x7F);
-                }
+                    {
+                        if ((irqTriggered & SB_IRQ_8BIT) != 0)
+                            LowerIrq(SB_IRQ_8BIT);
+                        bool ready = readBuffer.Count > 0 && !dspHighspeed;
+                        return (byte)((ready ? 0x80 : 0) | 0x7F);
+                    }
 
                 // IRQ 16-bit ack
-                case 0x22F:
-                    LowerIrq(SB_IRQ_16BIT);
-                    return 0;
+                //case 0x22F:
+                 //   LowerIrq(SB_IRQ_16BIT);
+                //    return 0;
 
                 // MPU-401 data
                 case 0x330:

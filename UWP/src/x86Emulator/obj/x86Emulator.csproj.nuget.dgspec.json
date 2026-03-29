@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Emulator\\x86Emulator.csproj": {}
+    "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Emulator\\x86Emulator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\x86DisasmUWP.csproj": {
+    "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\x86DisasmUWP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\x86DisasmUWP.csproj",
+        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\x86DisasmUWP.csproj",
         "projectName": "x86DisasmUWP",
-        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\x86DisasmUWP.csproj",
+        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\x86DisasmUWP.csproj",
         "packagesPath": "C:\\Users\\KantzJr\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\obj\\",
+        "outputPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "UsingMicrosoftNETSdk": false,
@@ -81,14 +81,14 @@
         }
       }
     },
-    "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Emulator\\x86Emulator.csproj": {
+    "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Emulator\\x86Emulator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Emulator\\x86Emulator.csproj",
+        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Emulator\\x86Emulator.csproj",
         "projectName": "x86Emulator",
-        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Emulator\\x86Emulator.csproj",
+        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Emulator\\x86Emulator.csproj",
         "packagesPath": "C:\\Users\\KantzJr\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Emulator\\obj\\",
+        "outputPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Emulator\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "UsingMicrosoftNETSdk": false,
@@ -111,11 +111,11 @@
         "frameworks": {
           "uap10.0.16299": {
             "projectReferences": {
-              "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\x86DisasmUWP.csproj": {
-                "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86DisasmUWP\\x86DisasmUWP.csproj"
+              "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\x86DisasmUWP.csproj": {
+                "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86DisasmUWP\\x86DisasmUWP.csproj"
               },
-              "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Native\\x86Native.vcxproj": {
-                "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Native\\x86Native.vcxproj"
+              "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Native\\x86Native.vcxproj": {
+                "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Native\\x86Native.vcxproj"
               }
             }
           }
@@ -185,11 +185,11 @@
         }
       }
     },
-    "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Native\\x86Native.vcxproj": {
+    "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Native\\x86Native.vcxproj": {
       "restore": {
-        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Native\\x86Native.vcxproj",
+        "projectUniqueName": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Native\\x86Native.vcxproj",
         "projectName": "x86Native",
-        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\Xbox-UWP-VM-testing\\src\\x86Native\\x86Native.vcxproj",
+        "projectPath": "C:\\Users\\KantzJr\\Documents\\GitHub\\v86\\UWP\\src\\x86Native\\x86Native.vcxproj",
         "UsingMicrosoftNETSdk": false,
         "frameworks": {
           "native": {

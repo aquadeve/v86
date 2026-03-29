@@ -114,7 +114,7 @@ namespace x86Emulator.Devices
             if (!HasRequest()) return false;
 
             ushort availIdx = ReadU16(availRingGpa + AVAIL_IDX);
-            ushort headIdx  = ReadU16(availRingGpa + AVAIL_RING + (lastAvailIdx % Size) * 2);
+            ushort headIdx  = ReadU16((uint)(availRingGpa + AVAIL_RING + (lastAvailIdx % Size) * 2));
             lastAvailIdx++;
 
             // Walk descriptor chain, collecting readable bytes

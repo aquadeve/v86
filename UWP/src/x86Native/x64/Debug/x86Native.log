@@ -1,1 +1,15 @@
-﻿
+﻿  pch.cpp
+  BitmapMap.cpp
+  D3D11Interop.cpp
+  GpuPassthroughRenderer.cpp
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Native\D3D11Interop.h(16,28): warning C4091: 'static ': ignored on left of 'x86Emulator::UWP::Native::D3D11Interop' when no variable is declared
+  (compiling source file '/D3D11Interop.cpp')
+  
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Native\D3D11Interop.h(16,28): warning C4091: 'static ': ignored on left of 'x86Emulator::UWP::Native::D3D11Interop' when no variable is declared
+  (compiling source file '/GpuPassthroughRenderer.cpp')
+  
+C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x86Native\D3D11Interop.h(16,28): warning C4091: 'static ': ignored on left of 'x86Emulator::UWP::Native::D3D11Interop' when no variable is declared
+  (compiling source file '/BitmapMap.cpp')
+  
+     Creating library C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x64\Debug\x86Native\x86Native.lib and object C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x64\Debug\x86Native\x86Native.exp
+  x86Native.vcxproj -> C:\Users\KantzJr\Documents\GitHub\v86\UWP\src\x64\Debug\x86Native\x86Native.dll
