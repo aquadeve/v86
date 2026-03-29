@@ -41,7 +41,7 @@ namespace x86Emulator.GUI.WIN2D
         /// Exposes the <see cref="GpuPassthrough"/> instance so that the VirtIO GPU
         /// device can use the same D3D11 texture upload path.
         /// </summary>
-        public GpuPassthrough GpuPassthrough => gpuPassthrough;
+        public override GpuPassthrough GpuPassthrough => gpuPassthrough;
 
         // When a VirtioGPU frame is available, this overrides the VGA frame.
         private CanvasBitmap virtioGPUFrame;
@@ -50,7 +50,7 @@ namespace x86Emulator.GUI.WIN2D
         /// Called by <see cref="VirtioGPU"/> when a new frame has been flushed.
         /// The next render cycle will display this frame instead of the VGA output.
         /// </summary>
-        public void SetVirtioGPUFrame(CanvasBitmap frame)
+        public override void SetVirtioGPUFrame(CanvasBitmap frame)
         {
             virtioGPUFrame = frame;
         }

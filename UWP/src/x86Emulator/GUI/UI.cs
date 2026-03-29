@@ -1,4 +1,5 @@
-﻿using Microsoft.Graphics.Canvas.UI.Xaml;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +20,10 @@ namespace x86Emulator.GUI
         }
 
         public abstract void ResetScreen();
+
+        public abstract GpuPassthrough GpuPassthrough { get; }
+
+        public abstract void SetVirtioGPUFrame(CanvasBitmap frame);
 
         public virtual void OnKeyDown(uint key)
         {
